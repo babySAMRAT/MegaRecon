@@ -35,8 +35,8 @@ console = Console()
 app     = typer.Typer(add_completion=False, invoke_without_command=True)
 
 VERSION = "2.0.0"
-AUTHOR  = "Aryan | MegaRecon Project"
-GITHUB  = "https://github.com/yourname/MegaRecon"
+AUTHOR  = "babySAMRAT | MegaRecon Project"
+GITHUB  = "https://github.com/babySAMRAT/MegaRecon"
 
 BANNER = r"""[bold red]
   ███╗   ███╗███████╗ ██████╗  █████╗ ██████╗ ███████╗ ██████╗ ██████╗ ███╗   ██╗
