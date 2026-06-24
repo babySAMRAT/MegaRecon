@@ -136,7 +136,7 @@ Output: `reports/recon_graph.mmd`
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/yourname/MegaRecon.git
+git clone https://github.com/babySAMRAT/MegaRecon.git
 cd MegaRecon
 ```
 
@@ -302,4 +302,4 @@ MIT License — see [LICENSE](LICENSE)
 
 ---
 
-*Made with ❤️ by Aryan*
+*Made with ❤️ by babySAMRAT(Aryan)*
