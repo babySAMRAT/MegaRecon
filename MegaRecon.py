@@ -12,7 +12,7 @@
   GitHub : https://github.com/babySAMRAT/MegaRecon
   License: MIT  |  Use ONLY on authorized targets
 """
-from __future__ import annotations
+from typing import Optional
 
 import json, os, re, shutil, subprocess, sys, urllib.request
 from datetime import datetime
@@ -286,7 +286,7 @@ def uniq(p: Path) -> None:
 def ensure_dirs(d: Path) -> None:
     for sub in ["raw","normalized","reports","logs"]: (d/sub).mkdir(parents=True, exist_ok=True)
 
-def append_lines(src: Path, dst: Path, guard: str | None = None) -> None:
+def append_lines(src: Path, dst: Path, guard: Optional[str] = None) -> None:
     if not src.exists(): return
     with src.open("r", errors="ignore") as f, dst.open("a", encoding="utf-8") as g:
         for raw in f:
@@ -390,7 +390,7 @@ def js_secret_hunt(js_urls: list[str], run_dir: Path) -> list[dict]:
 
 # ── 2. WAF BYPASS SUGGESTER ────────────────────────────────────────────────
 
-def waf_bypass_suggest(waf_file: Path) -> str | None:
+def waf_bypass_suggest(waf_file: Path) -> Optional[str]:
     section("WAF Bypass Suggester", "🛡")
     if not waf_file.exists():
         console.print("  [dim]No WAF output found — run wafw00f first.[/dim]\n")
