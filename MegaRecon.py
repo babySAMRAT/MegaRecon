@@ -12,6 +12,7 @@
   GitHub : https://github.com/babySAMRAT/MegaRecon
   License: MIT  |  Use ONLY on authorized targets
 """
+import argparse
 from typing import Optional
 
 import json, os, re, shutil, subprocess, sys, urllib.request
@@ -26,13 +27,11 @@ try:
     from rich.table import Table
     from rich.text import Text
     from rich import box
-    import typer
 except ImportError:
-    print("[!] Missing deps. Run:  pip install rich typer")
+    print("[!] Missing deps. Run:  pip install rich")
     sys.exit(1)
 
 console = Console()
-app     = typer.Typer(add_completion=False, invoke_without_command=True)
 
 VERSION = "2.0.0"
 AUTHOR  = "babySAMRAT | MegaRecon Project"
@@ -1039,34 +1038,51 @@ def main_menu():
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-#  TYPER ENTRY POINTS
+#  ENTRY POINT
 # ═══════════════════════════════════════════════════════════════════════════
 
-@app.callback(invoke_without_command=True)
-def main(ctx: typer.Context):
-    if ctx.invoked_subcommand is None:
+def cli():
+    parser = argparse.ArgumentParser(
+        description="MegaRecon — Unified Web App Recon CLI",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    sub = parser.add_subparsers(dest="command")
+
+    run_p = sub.add_parser("run", help="Non-interactive recon (CI/scripting mode)")
+    run_p.add_argument("-t", "--target", required=True, help="Target domain or URL")
+    run_p.add_argument("-p", "--profile", default="balanced",
+                       choices=["passive", "balanced", "deep"], help="Recon profile")
+    run_p.add_argument("-i", "--intensity", default="medium",
+                       choices=["low", "medium", "high"], help="Scan intensity")
+    run_p.add_argument("--ffuf", action="store_true", default=False,
+                       help="Enable ffuf content discovery")
+    run_p.add_argument("--nuclei", action=argparse.BooleanOptionalAction, default=True,
+                       help="Enable/disable nuclei checks")
+    run_p.add_argument("-w", "--wordlist",
+                       default="/usr/share/seclists/Discovery/Web-Content/common.txt",
+                       help="Wordlist for ffuf")
+    run_p.add_argument("--js-hunt", action=argparse.BooleanOptionalAction, default=True,
+                       help="Enable/disable JS Secret Hunter")
+    run_p.add_argument("--takeover", action=argparse.BooleanOptionalAction, default=True,
+                       help="Enable/disable subdomain takeover checks")
+
+    args = parser.parse_args()
+
+    if args.command == "run":
+        print_banner()
+        rd = run_workflow(
+            args.target, args.profile, args.intensity,
+            args.ffuf, args.nuclei, args.wordlist,
+            args.js_hunt, args.takeover,
+        )
+        console.print(f"\n[bold green]✓ Done → {rd}[/bold green]")
+    else:
+        # No subcommand → interactive menu
         print_banner()
         tool_doctor()
         input("  Press Enter to continue...")
         main_menu()
 
 
-@app.command()
-def run(
-    target:    str  = typer.Option(...,  "--target",  "-t", help="Target domain or URL"),
-    profile:   str  = typer.Option("balanced", "-p", help="passive|balanced|deep"),
-    intensity: str  = typer.Option("medium",   "-i", help="low|medium|high"),
-    ffuf:      bool = typer.Option(False,  "--ffuf",           help="Enable ffuf"),
-    nuclei:    bool = typer.Option(True,   "--nuclei/--no-nuclei"),
-    wordlist:  str  = typer.Option("/usr/share/seclists/Discovery/Web-Content/common.txt", "-w"),
-    js_hunt:   bool = typer.Option(True,   "--js-hunt/--no-js-hunt"),
-    takeover:  bool = typer.Option(True,   "--takeover/--no-takeover"),
-):
-    """Run MegaRecon non-interactively (CI/scripting mode)."""
-    print_banner()
-    rd = run_workflow(target, profile, intensity, ffuf, nuclei, wordlist, js_hunt, takeover)
-    console.print(f"\n[bold green]✓ Done → {rd}[/bold green]")
-
-
 if __name__ == "__main__":
-    app()
+    cli()
